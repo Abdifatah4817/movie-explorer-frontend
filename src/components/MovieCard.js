@@ -9,7 +9,7 @@ import { tmdbService } from '../services/tmdbService';
  * @returns {JSX.Element} The rendered movie card component.
  */
 const MovieCard = ({ movie, onClick }) => {
-  const posterUrl = tmdbService.getPosterUrl(movie.poster_path);
+  const posterUrl = tmdbService.getImageUrl(movie.poster_path);
   const placeholderImage = 'https://via.placeholder.com/500x750?text=No+Image';
 
   return (
