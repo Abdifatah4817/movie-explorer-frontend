@@ -11,6 +11,7 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [category, setCategory] = useState('popular');
   const [error, setError] = useState(null);
+  const [selectedTrailer, setSelectedTrailer] = useState(null); // 👈 for trailer popup
 
   const fetchMovies = useCallback(async () => {
     setLoading(true);
@@ -67,9 +68,19 @@ const Home = () => {
     setSearchQuery('');
   };
 
-  const handleMovieClick = (movie) => {
-    // You can implement a modal or navigate to a detail page
-    alert(`Movie: ${movie.title}\n\nOverview: ${movie.overview}`);
+  // 👇 Updated movie click — opens trailer
+  const handleMovieClick = async (movie) => {
+    try {
+      const trailer = await tmdbService.getMovieTrailer(movie.id);
+      if (trailer) {
+        setSelectedTrailer(`https://www.youtube.com/embed/${trailer.key}`);
+      } else {
+        alert('No trailer available for this movie.');
+      }
+    } catch (error) {
+      console.error('Error fetching trailer:', error);
+      alert('Failed to load trailer.');
+    }
   };
 
   return (
@@ -138,6 +149,27 @@ const Home = () => {
           </div>
         )}
       </div>
+
+      {/* 👇 Trailer Popup Overlay */}
+      {selectedTrailer && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+          <div className="relative w-11/12 max-w-3xl">
+            <iframe
+              src={selectedTrailer}
+              title="Movie Trailer"
+              width="100%"
+              height="500"
+              allowFullScreen
+            ></iframe>
+            <button
+              onClick={() => setSelectedTrailer(null)}
+              className="absolute top-2 right-2 text-white text-2xl"
+            >
+              ✖
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
